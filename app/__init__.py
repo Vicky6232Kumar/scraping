@@ -52,7 +52,7 @@ def get_chrome_driver():
         chrome_options.add_argument("--headless=new")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
-        service = Service('/usr/bin/chromedriver')
+        service = Service('/usr/local/bin/chromedriver')
         return webdriver.Chrome(service=service, options=chrome_options)
     except Exception as e:
         logger.error(f"Driver initialization failed: {str(e)}")
