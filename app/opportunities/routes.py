@@ -2,7 +2,7 @@
 from flask import Blueprint, jsonify, request
 from app import cache
 
-from app.scraper.event_scraper import EventScraper
+from app.scraper.event_scraper_dust import EventScraper
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium import webdriver
