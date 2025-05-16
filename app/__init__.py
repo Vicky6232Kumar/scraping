@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, g
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -14,6 +14,21 @@ class Config:
 # Initialize Flask app
 app = Flask(__name__)
 app.config.from_object('config.Config')
+
+@app.before_request
+def log_request_info():
+    g.start_time = time.time()
+    app.logger.info(f"Request: {request.remote_addr} {request.method} {request.path}")
+
+@app.after_request
+def log_response_info(response):
+    duration = time.time() - g.start_time if hasattr(g, 'start_time') else -1
+    app.logger.info(
+        f"Response: {request.remote_addr} {request.method} {request.path} "
+        f"Status: {response.status_code} Duration: {duration:.3f}s"
+    )
+    return response
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -52,7 +67,7 @@ def get_chrome_driver():
         chrome_options.add_argument("--headless=new")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
-        service = Service('/usr/local/bin/chromedriver')
+        service = Service('/usr/bin/chromedriver')
         return webdriver.Chrome(service=service, options=chrome_options)
     except Exception as e:
         logger.error(f"Driver initialization failed: {str(e)}")
