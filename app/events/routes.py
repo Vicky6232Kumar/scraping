@@ -1,6 +1,6 @@
 # app/events/routes.py
 from flask import Blueprint, jsonify
-from app import cache
+from app.cache import cache
 
 
 events_bp = Blueprint('events', __name__)
