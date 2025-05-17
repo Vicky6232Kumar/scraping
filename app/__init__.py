@@ -35,8 +35,8 @@ def log_response_info(response):
 # Links configuration
 links = {
     "events": {
-        "ai": "https://www.conferencealerts.in/ai",
-        # "india": "https://www.conferencealerts.in/india"
+        # "ai": "https://www.conferencealerts.in/ai",
+        "india": "https://www.conferencealerts.in/india"
     },
     "opportunities": {
         "iitr": "https://iitr.ac.in/Careers/Project%20Jobs.html",
