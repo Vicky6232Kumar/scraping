@@ -36,7 +36,7 @@ def log_response_info(response):
 links = {
     "events": {
         "ai": "https://www.conferencealerts.in/ai",
-        "india": "https://www.conferencealerts.in/india"
+        # "india": "https://www.conferencealerts.in/india"
     },
     "opportunities": {
         "iitr": "https://iitr.ac.in/Careers/Project%20Jobs.html",
@@ -67,7 +67,7 @@ def update_cache():
         # Update events
         for event_type, url in links["events"].items():
             try:
-                events = event_scraper.scrape_events(url)
+                events = event_scraper.scrape_conferences(url)
                 cache["events"][event_type] = events
                 logger.info(f"Successfully updated {event_type} events")
                 del events
