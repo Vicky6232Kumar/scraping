@@ -10,7 +10,8 @@ logger = logging.getLogger(__name__)
 # Links configuration
 links = {
     "events": {
-        "india": "https://www.conferencealerts.in/india"
+        "india": "https://www.conferencealerts.in/india",
+        "ai": "https://www.conferencealerts.in/ai"
     },
     "opportunities": {
         "iitr": "https://iitr.ac.in/Careers/Project%20Jobs.html",
