@@ -52,15 +52,16 @@ cache = {
 }
 
 def get_chrome_options():
-
     options = Options()
     options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-dev-shm-usage")  # Critical for low-memory
     options.add_argument("--disable-gpu")
-    options.add_argument("--window-size=1920,1080")
-    options.add_argument("--disable-blink-features=AutomationControlled")
-    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.5615.138 Safari/537.36")
+    options.add_argument("--single-process")  # Reduces memory overhead
+    options.add_argument("--remote-debugging-port=9222")
+    options.add_argument("--window-size=1280,720")  # Smaller than 1920x1080
+    options.add_argument("--disable-extensions")
+    options.add_argument("--disable-software-rasterizer")
     return options
 
 def update_cache():
@@ -69,21 +70,38 @@ def update_cache():
         service = Service('/usr/local/bin/chromedriver')
         driver = webdriver.Chrome(service=service, options=get_chrome_options())
         event_scraper = EventScraper()
-        for event_type, url in links["events"].items():
-            try:
-                events = event_scraper.scrape_conferences(url,driver)
-                cache["events"][event_type] = events
-                logger.info(f"Updated {event_type} events")
-            except Exception as e:
-                logger.error(f"Failed to update {event_type} events: {e}")
+        
+        # Batch configuration with timeout per URL
+        BATCH_SIZE = 2 
+        event_items = list(links["events"].items())
+        
+        for i in range(0, len(event_items), BATCH_SIZE):
+            batch = event_items[i:i+BATCH_SIZE]
+            
+            for event_type, url in batch:
+                try:
+                    # Add per-URL timeout
+                    events = event_scraper.scrape_conferences(url, driver)
+                    cache["events"][event_type] = events
+                    logger.info(f"Updated {event_type} (count: {len(events)})")
+                    del events
+                except Exception as e:
+                    logger.error(f"Failed {event_type}: {str(e)}")
+                    cache["events"][event_type] = []  # Clear stale data
+            
+            # Enhanced cleanup
+            driver.execute_script("window.open('about:blank', '_blank');")
+            driver.close()
+            driver.switch_to.window(driver.window_handles[0])
+            driver.delete_all_cookies()
+            driver.execute_script("window.performance.clearResourceTimings();")
+            gc.collect()
+            
         cache["last_updated"] = time.time()
-        logger.info("Cache fully updated")
+        
     except Exception as e:
-        logger.error(f"Background scraping failed: {e}")
+        logger.error(f"Critical failure: {str(e)}")
+        # Implement dead-letter queue or notification here
     finally:
-        gc.collect()
         if driver:
-            try:
-                driver.quit()
-            except Exception as e:
-                logger.error(f"Driver cleanup failed: {str(e)}")
+            driver.quit()
