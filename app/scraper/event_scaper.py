@@ -1,51 +1,12 @@
-from bs4 import BeautifulSoup
-from app.splash_client import fetch_html_with_splash
+#app/scraper/event_scraper.py
 
-from flask import Flask, jsonify
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-class EventScraper:
-    # def scrape_events(self, url):
-    #     html = fetch_html_with_splash(url)
-    #     soup = BeautifulSoup(html, 'html.parser')
-    #     table = soup.find('table', {'class': 'conf-table'}) or soup.find('table')
-    #     if not table:
-    #         raise Exception("Conference table not found")
-    #     conferences = []
-    #     for row in table.find_all('tr'):
-    #         cols = row.find_all('td')
-    #         if len(cols) >= 3:
-    #             conferences.append({
-    #                 "date": cols[0].get_text(strip=True),
-    #                 "name": cols[1].get_text(strip=True),
-    #                 "venue": cols[2].get_text(strip=True)
-    #             })
-    #     return {
-    #             "status": "success",
-    #             "url_scraped": url,
-    #             "conference_count": len(conferences),
-    #             "conferences": conferences
-    #     }
-    
+class EventScraper:    
 
-    def scrape_conferences(self,url):
-        chrome_options = Options()
-   
-        chrome_options.add_argument("--headless=new")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--window-size=1920,1080")
-        chrome_options.add_argument("--disable-blink-features=AutomationControlled")
-        chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.5615.138 Safari/537.36")
-
-        service = Service('/usr/local/bin/chromedriver')
-        # driver = get_driver(headless=True)
-        # url = 'https://www.conferencealerts.in/agriculture'
-        driver = webdriver.Chrome(service=service, options=chrome_options)
+    def scrape_conferences(self, url,driver):
         try:
             print(f"Scraping URL: {url}")
             driver.get(url)
@@ -161,8 +122,6 @@ class EventScraper:
                 "url_scraped": url,
                 "message": str(e)
             }
-        finally:
-            driver.quit()
 
         
         
