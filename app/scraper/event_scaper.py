@@ -99,7 +99,7 @@ class EventScraper:
 
                         data = {}
                         title = driver.find_element(By.CLASS_NAME, "text-xl")
-                        data['Name'] = title.text.strip()
+                        data['name'] = title.text.strip()
 
                         cards = driver.find_elements(By.XPATH, "//div[contains(@class, 'group/card')]")
                         for card in cards:
@@ -121,7 +121,7 @@ class EventScraper:
                                     case "Abstracts Deadline":
                                         data["abstract_dl"] = value
                                     case "Event Enquiry Email Address":
-                                        data["enq_email"] = value
+                                        data["enq_email"] = value.split("mailto:")[1]
                                     case "Website":
                                         data["website"] = value
                                     case "Organized by":
