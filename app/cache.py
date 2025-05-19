@@ -72,7 +72,7 @@ def get_chrome_options():
 def update_cache():
     driver = None
     try:
-        service = Service('/usr/bin/chromedriver')
+        service = Service('/usr/local/bin/chromedriver')
         driver = webdriver.Chrome(service=service, options=get_chrome_options())
         event_scraper = EventScraper()
         for event_type, url in links["events"].items():
