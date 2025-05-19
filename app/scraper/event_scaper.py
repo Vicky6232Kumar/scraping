@@ -111,8 +111,6 @@ class EventScraper:
 
             return {
                 "status": "success",
-                "url_scraped": url,
-                "conference_count": len(conferences),
                 "conferences": conferences
             }
 
