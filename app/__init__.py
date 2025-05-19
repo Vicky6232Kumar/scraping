@@ -29,4 +29,7 @@ def log_response_info(response):
 from app.events.routes import events_bp
 app.register_blueprint(events_bp)
 
+from app.opportunities.routes import opportunities_bp
+app.register_blueprint(opportunities_bp)
+
 init_scheduler(app)

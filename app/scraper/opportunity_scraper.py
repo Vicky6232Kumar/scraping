@@ -1,24 +1,12 @@
-from bs4 import BeautifulSoup
-import requests
 from datetime import datetime
-import logging
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import ElementClickInterceptedException, TimeoutException
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from selenium import webdriver
 import re
 from datetime import datetime
 import time
-import logging
 
 class OpportunityScraper:
-    def __init__(self, driver):
-        self.driver = driver
-        self.logger = logging.getLogger(__name__)
-        self.wait = WebDriverWait(driver, 20)
 
     def _parse_date(self, date_str):
         try:
@@ -33,32 +21,9 @@ class OpportunityScraper:
         link = link_cell.find('a')
         return link['href'] if link else None
     
-    def scrape_opportunities(self, url):
-        try:
-            response = requests.get(url)
-            soup = BeautifulSoup(response.text, 'html.parser')
-            opportunities = []
-            
-            for row in soup.find_all("tr"):
-                cells = row.find_all("td")
-                if len(cells) >= 6:
-                    opportunities.append({
-                        "title": cells[0].text.strip(),
-                        "organization": cells[1].text.strip(),
-                        "deadline": self._parse_date(cells[4].text.strip()),
-                        "stipend": self._parse_stipend(cells[3].text.strip()),
-                        "link": self._parse_link(cells[-1])
-                    })
-            
-            return opportunities
-            
-        except Exception as e:
-            self.logger.error(f"Opportunity scraping failed: {str(e)}")
-            return []
-        
-                       ############## iit Kharagpur ##########
+    ############## iit Kharagpur ##########
 
-    def scrape_opportunity_iitkgp(url, driver):
+    def scrape_opportunity_iitkgp(self, url, driver):
         try:
             print(f"Scraping URL: {url}")
             driver.get(url)
@@ -177,9 +142,9 @@ class OpportunityScraper:
 
             return {
                 "status": "success",
-                "url_scraped": url,
-                "conference_count": len(conferences),
-                "conferences": conferences
+                "opportunities": conferences,
+                "logo" : "https://s3.ap-south-1.amazonaws.com/tayog.in/institute_logo/Profile-63d6e61e-271a-40e1-8823-677921fd2fa4-20240917T174527750Z.webp",
+                "institute" : "Indian Institute of Technology Kharagpur"
             }
 
         except Exception as e:
@@ -189,9 +154,9 @@ class OpportunityScraper:
                 "message": str(e)
             }       
         
-              ############## iit Roorki ##########
+    ############## iit Roorkee ##########
 
-    def scrape_opportunity_iitr(url, driver):
+    def scrape_opportunity_iitr(self, url, driver):
         try:
             print(f"Scraping URL: {url}")
             driver.get(url)
@@ -257,9 +222,9 @@ class OpportunityScraper:
 
             return {
                 "status": "success",
-                "url_scraped": url,
-                "opportunity_count": len(opportunities),
-                "opportunities": opportunities
+                "opportunities": opportunities,
+                "logo" : "https://s3.ap-south-1.amazonaws.com/tayog.in/institute_logo/Profile-c40d918a-50d7-4f06-bdcb-97b69b78adff-20240917T175035690Z.webp",
+                "institute" : "Indian Institute of Technology Roorkee"
             }
 
         except Exception as e:
@@ -268,20 +233,12 @@ class OpportunityScraper:
                 "url_scraped": url,
                 "message": str(e)
             }
-        # finally:
-        #     if 'driver' in locals():
-        #         driver.quit()
 
                         ############## iit Guwahati ##########
 
-    def scrape_opportunity_iitg(url,driver):
-            # chrome_options = Options()
-            # chrome_options.add_argument("--headless=new")
+    def scrape_opportunity_iitg(self, url,driver):
 
-            try:
-                # service = Service('/usr/local/bin/chromedriver')
-                # driver = webdriver.Chrome(service=service, options=chrome_options)
-                
+            try:                
                 print(f"Scraping URL: {url}")
                 driver.get(url)
                 
@@ -390,9 +347,9 @@ class OpportunityScraper:
 
                 return {
                     "status": "success",
-                    "url_scraped": url,
-                    "conference_count": len(conferences),
-                    "conferences": conferences
+                    "opportunities": conferences,
+                    "logo" : "https://s3.ap-south-1.amazonaws.com/tayog.in/institute_logo/Profile-5a576b2a-76bf-43a3-bdce-0268c48a95de-20241008T095054381Z.webp",
+                    "institute" : "Indian Institute of Technology Guwahati"
                 }
 
             except Exception as e:
@@ -401,19 +358,12 @@ class OpportunityScraper:
                     "url_scraped": url,
                     "message": str(e)
                 }
-            # finally:
-            #     if 'driver' in locals():
-            #         driver.quit()
 
-                        ############## iit Kanpur ##########
+    ############## iit Kanpur ##########
 
-    def scrape_opportunity_iitk(url,driver):
-        # chrome_options = Options()
-        # chrome_options.add_argument("--headless=new")
+    def scrape_opportunity_iitk(self, url,driver):
 
         try:
-            # service = Service('/usr/local/bin/chromedriver')
-            # driver = webdriver.Chrome(service=service, options=chrome_options)
             
             print(f"Scraping URL: {url}")
             driver.get(url)
@@ -453,15 +403,13 @@ class OpportunityScraper:
                     cols = row.find_elements(By.TAG_NAME, "td")
                     if len(cols) >= 2:
                         conference = {
-                         
                             "post":cols[0].text.strip() ,
                             "department": cols[1].text.strip(),
                             "link" :cols[5].find_element(By.TAG_NAME,"a").get_attribute("href"),
                             "close_date":cols[4].text.strip() ,
                             "location" : "IIT Kanpur"
-                            
                         }
-                    conferences.append(conference)
+                        conferences.append(conference)
                     
                 except Exception as e:
                     print(f"Error processing row: {str(e)}")
@@ -472,9 +420,9 @@ class OpportunityScraper:
 
             return {
                 "status": "success",
-                "url_scraped": url,
-                "conference_count": len(conferences),
-                "conferences": conferences
+                "opportunities": conferences,
+                "logo" : "https://s3.ap-south-1.amazonaws.com/tayog.in/institute_logo/Profile-03033d59-8689-4257-81c6-adc370eafec7-20240917T174344536Z.webp",
+                "institute" : "Indian Institute of Technology Kanpur"
             }
 
         except Exception as e:
@@ -483,14 +431,10 @@ class OpportunityScraper:
                 "url_scraped": url,
                 "message": str(e)
             }
-        # finally:
-        #     if 'driver' in locals():
-        #         driver.quit()
 
-    
-                    ############## iit Bombay ##########
+    ############## iit Bombay ##########
 
-    def scrape_opportunity_iitb(url, driver):
+    def scrape_opportunity_iitb(self, url, driver):
         try:
             opportunities = []
             seen_links = set()  # Track links to avoid duplicates across all pages
@@ -562,7 +506,7 @@ class OpportunityScraper:
                             "close_date": content_dict.get("Closing Date", "NA"),
                             "location": content_dict.get("Location", "IIT Bombay")
                         }
-                        opportunities.append({"text": opportunity})
+                        opportunities.append(opportunity)
                     
                     except Exception as e:
                         print(f"Error processing opportunity: {e}")
@@ -583,9 +527,9 @@ class OpportunityScraper:
             
             return {
                 "status": "success",
-                "url_scraped": url,
-                "opportunity_count": len(opportunities),
-                "opportunities": opportunities
+                "opportunities": opportunities,
+                "logo" :"https://s3.ap-south-1.amazonaws.com/tayog.in/institute_logo/Profile-6dc44ebc-6776-4884-8a7b-09020144f033-20241007T035730093Z.webp",
+                "institute" : "Indian Institute of Technology Bombay"
             }
         
         except Exception as e:
@@ -595,16 +539,11 @@ class OpportunityScraper:
                 "message": str(e)
             }
 
-                    ############## iisc Banglore ##########
+    ############## iisc Banglore ##########
 
-
-    def scrape_opportunity_iisc(url,driver):
-            # chrome_options = Options()
-            # chrome_options.add_argument("--headless=new")
+    def scrape_opportunity_iisc(self, url,driver):
 
             try:
-                # service = Service('/usr/local/bin/chromedriver')
-                # driver = webdriver.Chrome(service=service, options=chrome_options)
                 
                 print(f"Scraping URL: {url}")
                 driver.get(url)
@@ -703,8 +642,8 @@ class OpportunityScraper:
                 return {
                     "status": "success",
                     "opportunities": opportunities,
-                    "name" : "Indian Institute of Science Banglore",
-                    "logo" : "https://s3.ap-south-1.amazonaws.com/tayog.in/institute_logo/iisc.jpg"
+                    "logo" : "https://s3.ap-south-1.amazonaws.com/tayog.in/institute_logo/iisc.jpg",
+                    "institute" : "Indian Institute of Science Banglore",
                 }
 
             except Exception as e:
@@ -713,12 +652,10 @@ class OpportunityScraper:
                     "url_scraped": url,
                     "message": str(e)
                 }
-            # finally:
-            #     if 'driver' in locals():
-            #         driver.quit()
-                        ############## iit madras ##########
 
-    def scrape_opportunity_iitm(url, driver):
+    ############## iit madras ##########
+
+    def scrape_opportunity_iitm(self, url, driver):
         try:
             print(f"Scraping URL: {url}")
             driver.get(url)
@@ -779,9 +716,9 @@ class OpportunityScraper:
 
             return {
                 "status": "success",
-                "url_scraped": url,
-                "opportunity_count": len(opportunities),
-                "opportunities": opportunities
+                "opportunities": opportunities,
+                "logo" : "https://s3.ap-south-1.amazonaws.com/tayog.in/institute_logo/Profile-143d00e6-3792-4c40-8d4f-52f4ea3c3ed0-20240917T173949705Z.webp",
+                "institute" : "Indian Institute of Technology Madras"
             }
 
         except Exception as e:
@@ -790,7 +727,3 @@ class OpportunityScraper:
                 "url_scraped": url,
                 "message": str(e)
             }
-
-        # finally:
-        # if 'driver' in locals():
-        #             driver.quit()
