@@ -14,29 +14,29 @@ logger = logging.getLogger(__name__)
 links = {
     "events": {
         "india": "https://www.conferencealerts.in/india",
-        "ai": "https://www.conferencealerts.in/ai",
-        "computer-science": "https://www.conferencealerts.in/computer-science",
-        "cybersecurity": "https://www.conferencealerts.in/cybersecurity",
-        "iot": "https://www.conferencealerts.in/iot",
-        "natural-language-processing": "https://www.conferencealerts.in/natural-language-processing",
-        "robotics": "https://www.conferencealerts.in/robotics",
-        "software-engineering": "https://www.conferencealerts.in/software-engineering",
-        "bioinformatics": "https://www.conferencealerts.in/bioinformatics",
-        "biomedical-engineering": "https://www.conferencealerts.in/biomedical-engineering",
-        "biotechnology": "https://www.conferencealerts.in/biotechnology",
-        "nanotechnology": "https://www.conferencealerts.in/nanotechnology",
-        "material-science": "https://www.conferencealerts.in/material-science",
-        "civil-engineering": "https://www.conferencealerts.in/civil-engineering",
-        "design": "https://www.conferencealerts.in/design",
-        "industrial-engineering": "https://www.conferencealerts.in/industrial-engineering",
-        "manufacturing": "https://www.conferencealerts.in/manufacturing",
-        "mining": "https://www.conferencealerts.in/mining",
-        "structural-engineering": "https://www.conferencealerts.in/structural-engineering",
-        "marine-engineering": "https://www.conferencealerts.in/marine-engineering",
-        "aeronautical": "https://www.conferencealerts.in/aeronautical",
-        "electronics": "https://www.conferencealerts.in/electronics",
-        "electrical": "https://www.conferencealerts.in/electrical",
-        "engineering": "https://www.conferencealerts.in/engineering"
+        # "ai": "https://www.conferencealerts.in/ai",
+        # "computer-science": "https://www.conferencealerts.in/computer-science",
+        # "cybersecurity": "https://www.conferencealerts.in/cybersecurity",
+        # "iot": "https://www.conferencealerts.in/iot",
+        # "natural-language-processing": "https://www.conferencealerts.in/natural-language-processing",
+        # "robotics": "https://www.conferencealerts.in/robotics",
+        # "software-engineering": "https://www.conferencealerts.in/software-engineering",
+        # "bioinformatics": "https://www.conferencealerts.in/bioinformatics",
+        # "biomedical-engineering": "https://www.conferencealerts.in/biomedical-engineering",
+        # "biotechnology": "https://www.conferencealerts.in/biotechnology",
+        # "nanotechnology": "https://www.conferencealerts.in/nanotechnology",
+        # "material-science": "https://www.conferencealerts.in/material-science",
+        # "civil-engineering": "https://www.conferencealerts.in/civil-engineering",
+        # "design": "https://www.conferencealerts.in/design",
+        # "industrial-engineering": "https://www.conferencealerts.in/industrial-engineering",
+        # "manufacturing": "https://www.conferencealerts.in/manufacturing",
+        # "mining": "https://www.conferencealerts.in/mining",
+        # "structural-engineering": "https://www.conferencealerts.in/structural-engineering",
+        # "marine-engineering": "https://www.conferencealerts.in/marine-engineering",
+        # "aeronautical": "https://www.conferencealerts.in/aeronautical",
+        # "electronics": "https://www.conferencealerts.in/electronics",
+        # "electrical": "https://www.conferencealerts.in/electrical",
+        # "engineering": "https://www.conferencealerts.in/engineering"
     },
     "opportunities": {
         "iitr": "https://iitr.ac.in/Careers/Project%20Jobs.html",
@@ -53,16 +53,12 @@ cache = {
 
 def get_chrome_options():
     options = Options()
-    options.add_argument("--headless=new")
+    options.add_argument("--headless=new")  # Modern headless mode
     options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--window-size=800,600")  # Reduced from 1280x720
-    options.add_argument("--disable-extensions")
-    options.add_argument("--disable-software-rasterizer")
-    options.add_argument("--log-level=3")  # Disable Chrome logs
-    options.add_argument("--disable-crash-reporter")  # New
-    options.add_argument("--disable-features=NetworkService")  # New
+    options.add_argument("--window-size=1280,800")  # Avoid mobile layout
+    options.add_argument("--log-level=3")  # Quiet logs
+    options.add_argument("--disable-extensions")  # Optional
+    options.add_argument("--disable-crash-reporter")  # Optional
     return options
 
 def update_cache():
