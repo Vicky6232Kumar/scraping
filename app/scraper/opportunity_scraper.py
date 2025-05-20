@@ -64,7 +64,7 @@ class OpportunityScraper:
                             lines = cols[0].get_attribute('innerHTML').split('<br>')
                             conference = {}
                             last_date = cols[3].text.strip()
-                            conference["last_date"] = last_date
+                            conference["close_date"] = last_date
                             for line in lines:
                                 try:
                                     temp = line.strip()
@@ -74,7 +74,7 @@ class OpportunityScraper:
                                             key = temp[key_start:key_end].strip().rstrip(":")
                                             val = temp[key_end+4:].strip()
                                             if(key == "Position"):
-                                                conference["position"] = val
+                                                conference["post"] = val
                                             elif(key == "Department"):
                                                 conference["department"] = val
                                 except Exception as e:
@@ -369,8 +369,8 @@ class OpportunityScraper:
             driver.get(url)
             
             selectors = [
-                ("CSS", "table.conf-table"),
-                ("XPATH", "/html/body/div[3]/div/div/div[2]/div/div[2]/div/div[2]"),
+                ("CSS", "html body div#all div#back div#contentarea div#wrapper2.shownocolumns div#main div.item-page div.int-cont div.right-box table.vacan"),
+                ("XPATH", "//html/body/div[3]/div/div/div[2]/div/div[2]/div/div[2]/table"),
                 ("XPATH", "//*[@id=\"tempJobDiv\"]")
             ]
 
