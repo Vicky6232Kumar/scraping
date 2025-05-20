@@ -34,9 +34,9 @@ def init_scheduler(app):
                 update_cache()
         
         # Initial cache update on server start
-        logger.info("🚀 [Production] Starting initial cache update")
-        with app.app_context():
-            update_cache()
+        # logger.info("🚀 [Production] Starting initial cache update")
+        # with app.app_context():
+        #     update_cache()
         
         # Start scheduler
         scheduler.start()
