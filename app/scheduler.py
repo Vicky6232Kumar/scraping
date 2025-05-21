@@ -4,7 +4,7 @@ from flask import Flask
 from flask_apscheduler import APScheduler
 import logging
 import os
-from app.cache import update_cache
+from app.cache import update_cache, ensure_cache
 
 class Config:
     SCHEDULER_API_ENABLED = True
@@ -18,7 +18,21 @@ def init_scheduler(app):
     if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         # Initialize scheduler with app
         scheduler.init_app(app)
-        
+
+        #🔄 Schedule ensure_cache every 5 minutes
+        @scheduler.task(
+            "interval",
+            id="ensure_cache_every_5min",
+            minutes=5,
+            misfire_grace_time=300,  # 5 min grace
+            timezone="Asia/Kolkata"
+        )
+        def run_ensure_cache():
+            logger.info("⏱️ [Scheduled] Running ensure_cache() every 5 minutes")
+            with app.app_context():
+                ensure_cache()
+
+
         # Schedule daily job at 4 AM IST
         @scheduler.task(
             "cron", 
