@@ -19,16 +19,17 @@ def init_scheduler(app):
         # Initialize scheduler with app
         scheduler.init_app(app)
 
-        #🔄 Schedule ensure_cache every 5 minutes
+        #🔄 Schedule ensure_cache every 2 minutes
         @scheduler.task(
-            "interval",
-            id="ensure_cache_every_5min",
-            minutes=5,
-            misfire_grace_time=300,  # 5 min grace
-            timezone="Asia/Kolkata"
+            "cron",
+            id="ensure_cache_every_2min_limited_hours",
+            minute="*/1",  # every minute
+            hour="0-3,8-23",  # 00:00 to 03:59 AND 09:00 to 23:59
+            timezone="Asia/Kolkata",
+            misfire_grace_time=300
         )
         def run_ensure_cache():
-            logger.info("⏱️ [Scheduled] Running ensure_cache() every 5 minutes")
+            logger.info("⏱️ [Scheduled] Running ensure_cache() every 2 minutes during active hours")
             with app.app_context():
                 ensure_cache()
 

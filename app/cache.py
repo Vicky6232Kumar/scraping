@@ -20,27 +20,27 @@ links = {
         "india": "https://www.conferencealerts.in/india",
         "ai": "https://www.conferencealerts.in/ai",
         "computer-science": "https://www.conferencealerts.in/computer-science",
-        # "cybersecurity": "https://www.conferencealerts.in/cybersecurity",
-        # "iot": "https://www.conferencealerts.in/iot",
-        # "natural-language-processing": "https://www.conferencealerts.in/natural-language-processing",
-        # "robotics": "https://www.conferencealerts.in/robotics",
-        # "software-engineering": "https://www.conferencealerts.in/software-engineering",
-        # "bioinformatics": "https://www.conferencealerts.in/bioinformatics",
-        # "biomedical-engineering": "https://www.conferencealerts.in/biomedical-engineering",
-        # "biotechnology": "https://www.conferencealerts.in/biotechnology",
-        # "nanotechnology": "https://www.conferencealerts.in/nanotechnology",
-        # "material-science": "https://www.conferencealerts.in/material-science",
-        # "civil-engineering": "https://www.conferencealerts.in/civil-engineering",
-        # "design": "https://www.conferencealerts.in/design",
-        # "industrial-engineering": "https://www.conferencealerts.in/industrial-engineering",
-        # "manufacturing": "https://www.conferencealerts.in/manufacturing",
-        # "mining": "https://www.conferencealerts.in/mining",
-        # "structural-engineering": "https://www.conferencealerts.in/structural-engineering",
-        # "marine-engineering": "https://www.conferencealerts.in/marine-engineering",
-        # "aeronautical": "https://www.conferencealerts.in/aeronautical",
-        # "electronics": "https://www.conferencealerts.in/electronics",
-        # "electrical": "https://www.conferencealerts.in/electrical",
-        # "engineering": "https://www.conferencealerts.in/engineering"
+        "cybersecurity": "https://www.conferencealerts.in/cybersecurity",
+        "iot": "https://www.conferencealerts.in/iot",
+        "natural-language-processing": "https://www.conferencealerts.in/natural-language-processing",
+        "robotics": "https://www.conferencealerts.in/robotics",
+        "software-engineering": "https://www.conferencealerts.in/software-engineering",
+        "bioinformatics": "https://www.conferencealerts.in/bioinformatics",
+        "biomedical-engineering": "https://www.conferencealerts.in/biomedical-engineering",
+        "biotechnology": "https://www.conferencealerts.in/biotechnology",
+        "nanotechnology": "https://www.conferencealerts.in/nanotechnology",
+        "material-science": "https://www.conferencealerts.in/material-science",
+        "civil-engineering": "https://www.conferencealerts.in/civil-engineering",
+        "design": "https://www.conferencealerts.in/design",
+        "industrial-engineering": "https://www.conferencealerts.in/industrial-engineering",
+        "manufacturing": "https://www.conferencealerts.in/manufacturing",
+        "mining": "https://www.conferencealerts.in/mining",
+        "structural-engineering": "https://www.conferencealerts.in/structural-engineering",
+        "marine-engineering": "https://www.conferencealerts.in/marine-engineering",
+        "aeronautical": "https://www.conferencealerts.in/aeronautical",
+        "electronics": "https://www.conferencealerts.in/electronics",
+        "electrical": "https://www.conferencealerts.in/electrical",
+        "engineering": "https://www.conferencealerts.in/engineering"
     },
     "opportunities": {
         "iitr": "https://iitr.ac.in/Careers/Project%20Jobs.html",
@@ -62,7 +62,8 @@ cache = {
     "last_updated": 0
 }
 
-CACHE_FILE_PATH = "app/cache_store.json"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CACHE_FILE_PATH = os.path.join(BASE_DIR, "cache_store.json")
 CACHE_UPDATE_INTERVAL_SECONDS = 3600
 
 def get_chrome_options():
@@ -89,10 +90,18 @@ def load_cache_from_file():
         try:
             with open(CACHE_FILE_PATH, "r") as f:
                 loaded_cache = json.load(f)
+                if "events" in loaded_cache:
+                    cache["events"] = loaded_cache["events"]
+                if "opportunities" in loaded_cache:
+                    cache["opportunities"] = loaded_cache["opportunities"]
                 if "last_updated" in loaded_cache:
-                    cache = loaded_cache
-                    logger.info("Approximate cache size in bytes: %d", sys.getsizeof(cache))
-                    logger.info("📁 Cache loaded from file")
+                    cache["last_updated"] = loaded_cache["last_updated"]
+                    
+                # if "last_updated" in loaded_cache:
+                #     cache = loaded_cache
+                logger.info("📁 Cache loaded from file")
+                # logger.info("Approximate cache size in bytes: %d", sys.getsizeof(cache))
+                # logger.info(f"Cache content: {cache}")
         except Exception as e:
             logger.error(f"❌ Failed to load cache from file: {e}")
 
@@ -112,17 +121,16 @@ def update_cache():
                 logger.error(f"Failed to update {event_type} events: {e}")
         
         opportunities_scraper = OpportunityScraper()
+        cache["opportunities"]["iisc"] = opportunities_scraper.scrape_opportunity_iisc(links["opportunities"]['iisc'], driver)
         cache["opportunities"]["iitr"] = opportunities_scraper.scrape_opportunity_iitr(links["opportunities"]['iitr'], driver)
         cache["opportunities"]["iitk"] = opportunities_scraper.scrape_opportunity_iitk(links["opportunities"]['iitk'], driver)
         cache["opportunities"]["iitb"] = opportunities_scraper.scrape_opportunity_iitb(links['opportunities']['iitb'], driver)
-        cache["opportunities"]["iisc"] = opportunities_scraper.scrape_opportunity_iisc(links["opportunities"]['iisc'], driver)
         cache["opportunities"]["iitg"] = opportunities_scraper.scrape_opportunity_iitg(links["opportunities"]['iitg'], driver)
         cache["opportunities"]["iitkgp"] = opportunities_scraper.scrape_opportunity_iitkgp(links["opportunities"]['iitkgp'], driver)
         cache["opportunities"]["iitm"] = opportunities_scraper.scrape_opportunity_iitm(links["opportunities"]['iitm'], driver)
 
         cache["last_updated"] = time.time()
         save_cache_to_file()
-        logger.info("Approximate cache size in bytes:", sys.getsizeof(cache))
 
         logger.info("Cache fully updated")
     except Exception as e:
@@ -137,6 +145,7 @@ def update_cache():
 
 def ensure_cache():
     """Load from file if cache is empty"""
+    # logger.info(f"Cache content: {cache}")
     if cache["last_updated"] == 0:
         logger.info("📦 Empty cache detected, loading from file...")
         load_cache_from_file()
