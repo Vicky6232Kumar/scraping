@@ -23,7 +23,7 @@ def init_scheduler(app):
         @scheduler.task(
             "cron",
             id="ensure_cache_every_2min_limited_hours",
-            minute="*/1",  # every minute
+            minute="*/2",  # every minute
             hour="0-3,8-23",  # 00:00 to 03:59 AND 09:00 to 23:59
             timezone="Asia/Kolkata",
             misfire_grace_time=300
